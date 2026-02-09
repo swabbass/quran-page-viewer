@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quran Page Viewer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <h2>الصفحات</h2>
+        <input type="text" id="page-search" placeholder="رقم الصفحة..." autocomplete="off">
+      </div>
+      <div id="page-list"></div>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content">
+      <!-- Header -->
+      <header id="top-header">
+        <button id="btn-prev" title="الصفحة السابقة">&#9654;</button>
+        <div id="header-info">
+          <span id="header-surah"></span>
+          <span id="header-page"></span>
+          <span id="header-juz"></span>
+        </div>
+        <button id="btn-next" title="الصفحة التالية">&#9664;</button>
+        <button id="btn-compare" title="مقارنة مع quran.com">مقارنة</button>
+      </header>
+
+      <!-- Content Area -->
+      <div id="content-area">
+        <div id="quran-page">
+          <div id="page-lines"></div>
+        </div>
+        <div id="compare-pane" class="hidden">
+          <div id="compare-resize-handle"></div>
+          <iframe id="compare-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Tooltip -->
+  <div id="tooltip" class="hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+fonts/
+ttf_fonts/
+data/quran.json
+data/quran.pb
+data/.progress.json
+__pycache__/
+.DS_Store
