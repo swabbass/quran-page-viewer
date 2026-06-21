@@ -71,14 +71,18 @@ Flat array of 6236 verses:
     "page": 1,
     "verse_num": 1,
     "word_count": 4,
-    "text": "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ",
-    "code": "ﱁ\tﱂ\tﱃ\tﱄ\tﱅ"
+    "text_glyphs": "ﱁ\tﱂ\tﱃ\tﱄ\tﱅ",
+    "text": "بِسْمِ\tٱللَّهِ\tٱلرَّحْمَـٰنِ\tٱلرَّحِيمِ"
 }
 ```
 
-- `text`: readable Arabic (uthmani script), space-separated words
-- `code`: QCF2 glyph characters, **tab-separated** (some glyphs contain spaces). Last glyph is the verse number end marker.
-- `word_count`: number of word glyphs (excluding the end marker)
+- `text_glyphs`: QCF2 glyph characters, **tab-separated** (some glyphs contain spaces). Last token is the verse number end marker.
+- `text`: readable Arabic per word (uthmani script), **tab-separated**, aligned 1:1 with `text_glyphs`'s word tokens (i.e., excludes the end marker). Pause marks (ۛ ۖ) are bundled into the preceding word.
+- `word_count`: number of word glyphs (excluding the end marker).
+
+Invariants for every verse:
+- `len(text.split("\t")) == word_count`
+- `len(text_glyphs.split("\t")) - 1 == word_count`
 
 ### Protobuf (`data/quran.pb`)
 
@@ -86,6 +90,7 @@ Matches the Kotlin `DecodedQuran` schema:
 
 - `text_glyphs` (field 7): tab-separated word glyphs → use `split("\t")` in Kotlin
 - `verse_num_glyphs` (field 8): end marker glyph
+- `text` (field 9): tab-separated readable Arabic per word, aligned 1:1 with field 7
 
 ### Fonts
 

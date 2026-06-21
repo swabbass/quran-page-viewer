@@ -41,6 +41,7 @@
   const btnPrev = document.getElementById("btn-prev");
   const btnNext = document.getElementById("btn-next");
   const btnCompare = document.getElementById("btn-compare");
+  const btnToggleText = document.getElementById("btn-toggle-text");
   const comparePane = document.getElementById("compare-pane");
   const compareIframe = document.getElementById("compare-iframe");
   const tooltip = document.getElementById("tooltip");
@@ -49,7 +50,7 @@
   // ── Data Loading ──
 
   async function loadData() {
-    pageLines.className = "loading";
+    pageLines.classList.add("loading");
     pageLines.textContent = "جاري تحميل البيانات...";
     try {
       const resp = await fetch("data/quran.json");
@@ -154,12 +155,12 @@
   async function renderPage(page) {
     const verses = pageIndex[page];
     if (!verses || verses.length === 0) {
-      pageLines.className = "";
+      pageLines.classList.remove("loading");
       pageLines.textContent = "لا توجد بيانات لهذه الصفحة";
       return;
     }
 
-    pageLines.className = "loading";
+    pageLines.classList.add("loading");
     pageLines.textContent = "جاري التحميل...";
 
     // Load the page font
@@ -186,19 +187,31 @@
         lastSurah = verse.surah;
       }
 
-      const glyphs = (verse.code || "").split("\t");
-      const words = (verse.text || "").split(" ");
+      const glyphs = (verse.text_glyphs || "").split("\t");
+      const words = (verse.text || "").split("\t");
 
       for (let i = 0; i < glyphs.length; i++) {
         const span = document.createElement("span");
         span.className = "quran-word";
         const isEnd = i >= words.length;
+        const uthmani = isEnd ? "" : (words[i] || "");
         if (isEnd) span.classList.add("end-marker");
-        span.textContent = glyphs[i];
-        span.style.fontFamily = `"${familyName}"`;
+
+        if (!isEnd) {
+          const label = document.createElement("small");
+          label.className = "word-text";
+          label.textContent = uthmani;
+          span.appendChild(label);
+        }
+        const glyph = document.createElement("span");
+        glyph.className = "word-glyph";
+        glyph.textContent = glyphs[i];
+        glyph.style.fontFamily = `"${familyName}"`;
+        span.appendChild(glyph);
+
         span.dataset.verseKey = `${verse.surah}:${verse.verse_num}`;
         span.dataset.surah = SURAH_NAMES[verse.surah] || "";
-        span.dataset.uthmani = isEnd ? "" : (words[i] || "");
+        span.dataset.uthmani = uthmani;
         span.dataset.position = i + 1;
         span.addEventListener("mouseenter", showTooltip);
         span.addEventListener("mouseleave", hideTooltip);
@@ -206,7 +219,7 @@
       }
     }
 
-    pageLines.className = "";
+    pageLines.classList.remove("loading");
     pageLines.innerHTML = "";
     pageLines.appendChild(flow);
   }
@@ -311,6 +324,14 @@
   function hideTooltip() {
     tooltip.classList.add("hidden");
   }
+
+  // ── Text-above-glyph toggle ──
+
+  btnToggleText.addEventListener("click", () => {
+    const on = pageLines.classList.toggle("show-text");
+    btnToggleText.classList.toggle("active", on);
+    btnToggleText.textContent = on ? "إخفاء النص" : "إظهار النص";
+  });
 
   // ── Compare Tool ──
 

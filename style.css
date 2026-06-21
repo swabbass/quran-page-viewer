@@ -224,6 +224,35 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: baseline;
+}
+
+.quran-word .word-text {
+  display: none;
+  font-family: "Traditional Arabic", "Scheherazade", "Amiri", serif;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  font-weight: 400;
+}
+
+#page-lines.show-text .quran-word .word-text {
+  display: block;
+}
+
+#page-lines.show-text .quran-flow {
+  row-gap: 14px;
+}
+
+#btn-toggle-text.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }
 
 .quran-word:hover {

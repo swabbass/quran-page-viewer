@@ -9,8 +9,9 @@ DecodedVerse fields (kotlinx.serialization.protobuf field order):
   4: page (int32)
   5: verse_num (int32)
   6: word_count (int32)
-  7: text_glyphs (string) - word glyphs concatenated, each char = one glyph
+  7: text_glyphs (string) - word glyphs, tab-separated (excludes end marker)
   8: verse_num_glyphs (string) - end marker glyph
+  9: text (string) - readable Arabic per word, tab-separated, aligned 1:1 with field 7
 
 DecodedQuran:
   1: verses (repeated DecodedVerse)
@@ -60,7 +61,7 @@ def encode_bytes_field(field_number, value):
     return encode_tag(field_number, 2) + encode_varint(len(value)) + value
 
 
-def encode_verse(verse, text_glyphs, verse_num_glyphs):
+def encode_verse(verse, text_glyphs, verse_num_glyphs, text):
     """Encode a single DecodedVerse message."""
     msg = bytearray()
     msg += encode_int_field(1, verse["id"])
@@ -71,6 +72,7 @@ def encode_verse(verse, text_glyphs, verse_num_glyphs):
     msg += encode_int_field(6, verse["word_count"])
     msg += encode_string_field(7, text_glyphs)
     msg += encode_string_field(8, verse_num_glyphs)
+    msg += encode_string_field(9, text)
     return bytes(msg)
 
 
@@ -78,12 +80,13 @@ def encode_quran(verses_data):
     """Encode the full DecodedQuran message."""
     msg = bytearray()
     for v in verses_data:
-        glyphs = v["code"].split("\t")
+        glyphs = v["text_glyphs"].split("\t")
         # All glyphs except last = word glyphs (tab-separated), last = end marker
         text_glyphs = "\t".join(glyphs[:-1])
         verse_num_glyphs = glyphs[-1] if glyphs else ""
+        text = v.get("text", "")
 
-        verse_bytes = encode_verse(v, text_glyphs, verse_num_glyphs)
+        verse_bytes = encode_verse(v, text_glyphs, verse_num_glyphs, text)
         msg += encode_bytes_field(1, verse_bytes)
     return bytes(msg)
 
@@ -106,7 +109,7 @@ def main():
 
     # Verify sample
     v = data[0]
-    glyphs = v["code"].split(" ")
+    glyphs = v["text_glyphs"].split("\t")
     print(f"\nSample verse 1:")
     print(f"  text_glyphs: {repr(''.join(glyphs[:-1]))} ({len(''.join(glyphs[:-1]))} chars)")
     print(f"  verse_num_glyphs: {repr(glyphs[-1])}")
